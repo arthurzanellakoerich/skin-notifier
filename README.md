@@ -1,5 +1,5 @@
 # 🎮 Skin Notifier
-
+PROJETO PESSOAL
 Bot que monitora skins do CS2 no site [DashSkins](https://dashskins.com.br)
 e envia notificações via WhatsApp quando encontra itens dentro do preço desejado.
 
