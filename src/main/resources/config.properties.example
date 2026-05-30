@@ -2,3 +2,4 @@
 # Tutorial para obter a APIKEY: https://www.callmebot.com/blog/free-api-whatsapp-messages/
 whatsapp.phone=SEU_NUMERO_COM_DDI
 whatsapp.apikey=SUA_APIKEY_AQUI
+bot.intervalo=1

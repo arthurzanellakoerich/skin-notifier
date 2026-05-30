@@ -1,5 +1,6 @@
 package com.arthur;
 
+import com.arthur.config.Config;
 import com.arthur.model.SkinAlerta;
 import com.arthur.notifier.WhatsAppNotifier;
 import com.arthur.service.DashSkinsService;
@@ -13,12 +14,13 @@ import java.util.concurrent.TimeUnit;
 public class App {
     public static void main(String[] args) {
 
+        Config config = new Config();
         DashSkinsService dashSkinsService = new DashSkinsService();
         WhatsAppNotifier notifier = new WhatsAppNotifier();
 
         List<SkinAlerta> alertas = List.of(
-                new SkinAlerta("awp", 1000.0, 1200.0),
-                new SkinAlerta("butterfly", 2500.0, 3500.0)
+                new SkinAlerta("karambit", 3000.0, 3500.0),
+                new SkinAlerta("butterfly", 2500.0, 3000.0)
         );
 
         SkinCheckerService checker = new SkinCheckerService(
@@ -27,9 +29,12 @@ public class App {
                 alertas
         );
 
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.scheduleAtFixedRate(checker::verificar, 0, 1, TimeUnit.HOURS);
+        int intervalo = config.getIntervalo();
 
-        System.out.println("Bot iniciado! Monitorando " + alertas.size() + " skins...");
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        scheduler.scheduleAtFixedRate(checker::verificar, 0, intervalo, TimeUnit.HOURS);
+
+        System.out.println("Bot iniciado! Monitorando " + alertas.size()
+                + " skins a cada " + intervalo + " hora(s)...");
     }
 }

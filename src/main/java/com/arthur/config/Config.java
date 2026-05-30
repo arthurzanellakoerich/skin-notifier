@@ -31,4 +31,8 @@ public class Config {
     public String getApiKey() {
         return properties.getProperty("whatsapp.apikey");
     }
+
+    public int getIntervalo() {
+        return Integer.parseInt(properties.getProperty("bot.intervalo"));
+    }
 }
