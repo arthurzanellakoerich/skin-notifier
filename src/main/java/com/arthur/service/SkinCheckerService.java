@@ -1,6 +1,7 @@
 package com.arthur.service;
 
 import com.arthur.model.Skin;
+import com.arthur.model.SkinAlerta;
 import com.arthur.notifier.WhatsAppNotifier;
 
 import java.util.HashSet;
@@ -12,58 +13,56 @@ public class SkinCheckerService {
     private final DashSkinsService dashSkinsService;
     private final WhatsAppNotifier notifier;
     private final Set<String> skinsNotificadas = new HashSet<>();
-
-    // Nome e faixa de preço que você quer monitorar
-    private final String nomeBuscado;
-    private final double precoMinimo;
-    private final double precoMaximo;
+    private final List<SkinAlerta> alertas;
 
     public SkinCheckerService(DashSkinsService dashSkinsService,
                               WhatsAppNotifier notifier,
-                              String nomeBuscado,
-                              double precoMinimo,
-                              double precoMaximo) {
+                              List<SkinAlerta> alertas) {
         this.dashSkinsService = dashSkinsService;
         this.notifier = notifier;
-        this.nomeBuscado = nomeBuscado;
-        this.precoMinimo = precoMinimo;
-        this.precoMaximo = precoMaximo;
+        this.alertas = alertas;
     }
 
     public void verificar() {
 
-        System.out.println("🔍 Verificando skins...");
+        System.out.println("Verificando skins...");
 
-        List<Skin> resultado = dashSkinsService.buscarSkins(nomeBuscado, precoMinimo, precoMaximo);
+        for (SkinAlerta alerta : alertas) {
 
-        for (Skin skin : resultado) {
-            if (!skinsNotificadas.contains(skin.getId())) {
+            List<Skin> resultado = dashSkinsService.buscarSkins(
+                    alerta.getNome(),
+                    alerta.getPrecoMinimo(),
+                    alerta.getPrecoMaximo()
+            );
 
-                // Monta o slug da URL
-                String slug = skin.getMarketHashName()
-                        .toLowerCase()
-                        .replace(" | ", "-")
-                        .replace(" ", "-")
-                        .replace("(", "")
-                        .replace(")", "")
-                        .replace("™", "")
-                        .replace("★ ", "")
-                        .replace("★", "");
+            for (Skin skin : resultado) {
+                if (!skinsNotificadas.contains(skin.getId())) {
 
-                String link = "https://dashskins.com.br/item/" + slug + "/" + skin.getId();
+                    String slug = skin.getMarketHashName()
+                            .toLowerCase()
+                            .replace(" | ", "-")
+                            .replace(" ", "-")
+                            .replace("(", "")
+                            .replace(")", "")
+                            .replace("™", "")
+                            .replace("★ ", "")
+                            .replace("★", "");
 
-                String mensagem = "🎮 " + skin.getName()
-                        + " | R$ " + skin.getPrice()
-                        + " | Desconto: " + skin.getDiscount() + "%"
-                        + " | " + link;
+                    String link = "https://dashskins.com.br/item/" + slug + "/" + skin.getId();
 
-                notifier.enviarMensagem(mensagem);
-                skinsNotificadas.add(skin.getId());
+                    String mensagem = "🎮 " + skin.getName()
+                            + " | R$ " + skin.getPrice()
+                            + " | Desconto: " + skin.getDiscount() + "%"
+                            + " | " + link;
 
-                System.out.println("✅ Notificado: " + skin.getName());
+                    notifier.enviarMensagem(mensagem);
+                    skinsNotificadas.add(skin.getId());
+
+                    System.out.println("Notificado: " + skin.getName());
+                }
             }
         }
 
-        System.out.println("⏳ Aguardando próxima verificação...");
+        System.out.println("Aguardando próxima verificação...");
     }
 }
